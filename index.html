@@ -16,6 +16,11 @@
         }
         canvas {
             display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
         }
     </style>
 </head>
@@ -38,7 +43,7 @@
         let finalMessage = "I LOVE YOU DAD";
         let animationStarted = false;
         let showFinalMessage = false;
-        let delayFinalMessage = 10000; // نمایش جمله‌ی دوم بعد ان ۷ ثانیه
+        let delayFinalMessage = 7000; // تغییر زمان نمایش متن نهایی
         let colors = ["#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#0000FF", "#4B0082", "#9400D3", "#FF1493", "#00FA9A", "#FF4500", "#FFD700", "#1E90FF"];
 
         const letterParticles = [];
@@ -50,7 +55,7 @@
                 this.y = y;
                 this.dy = 0;
                 this.color = colors[index % colors.length];
-                this.balloon = new Balloon(x, y - 70, this.color); // بادکنک کمی بالاتر قرار می‌گیرد
+                this.balloon = new Balloon(x, y - 80, this.color);
             }
 
             draw() {
@@ -63,8 +68,8 @@
 
             drawLine() {
                 ctx.beginPath();
-                ctx.moveTo(this.x + 15, this.y - 10); // تنظیم دقیق نخ بادکنک
-                ctx.lineTo(this.balloon.x, this.balloon.y + 20); // اتصال نخ به بادکنک
+                ctx.moveTo(this.x + 15, this.y - 10);
+                ctx.lineTo(this.balloon.x, this.balloon.y + 20);
                 ctx.strokeStyle = "white";
                 ctx.stroke();
             }
@@ -75,7 +80,7 @@
                     this.balloon.y += this.dy;
                     if (this.y < -50) {
                         this.y = canvas.height + 50;
-                        this.balloon.y = this.y - 70;
+                        this.balloon.y = this.y - 80;
                     }
                 }
                 this.draw();
@@ -136,9 +141,11 @@
         }
 
         function showFinalText() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // پاک کردن بادکنک‌ها
             ctx.font = "bold italic 60px Arial";
             ctx.fillStyle = "#FFD700";
             ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
             ctx.fillText(finalMessage, canvas.width / 2, canvas.height / 2);
         }
 
