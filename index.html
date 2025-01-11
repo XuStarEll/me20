@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Father's Day</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="balloonCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('balloonCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        let message = "HAPPY FATHER'S DAY!";
+        let finalMessage = "I LOVE YOU DAD";
+        let animationStarted = false;
+        let showFinalMessage = false;
+        let delayFinalMessage = 10000; // نمایش جمله‌ی دوم بعد ان ۷ ثانیه
+        let colors = ["#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#0000FF", "#4B0082", "#9400D3", "#FF1493", "#00FA9A", "#FF4500", "#FFD700", "#1E90FF"];
+
+        const letterParticles = [];
+
+        class Letter {
+            constructor(char, x, y, index) {
+                this.char = char;
+                this.x = x;
+                this.y = y;
+                this.dy = 0;
+                this.color = colors[index % colors.length];
+                this.balloon = new Balloon(x, y - 70, this.color); // بادکنک کمی بالاتر قرار می‌گیرد
+            }
+
+            draw() {
+                ctx.font = "bold italic 50px Arial";
+                ctx.fillStyle = this.color;
+                ctx.fillText(this.char, this.x, this.y);
+                this.balloon.draw();
+                this.drawLine();
+            }
+
+            drawLine() {
+                ctx.beginPath();
+                ctx.moveTo(this.x + 15, this.y - 10); // تنظیم دقیق نخ بادکنک
+                ctx.lineTo(this.balloon.x, this.balloon.y + 20); // اتصال نخ به بادکنک
+                ctx.strokeStyle = "white";
+                ctx.stroke();
+            }
+
+            update() {
+                if (animationStarted) {
+                    this.y += this.dy;
+                    this.balloon.y += this.dy;
+                    if (this.y < -50) {
+                        this.y = canvas.height + 50;
+                        this.balloon.y = this.y - 70;
+                    }
+                }
+                this.draw();
+            }
+        }
+
+        class Balloon {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.dy = Math.random() * -2 - 1;
+                this.color = color;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 20, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.strokeStyle = "white";
+                ctx.stroke();
+            }
+        }
+
+        function init() {
+            const spacing = canvas.width / (message.length + 3);
+            let yPos = canvas.height / 2;
+
+            for (let i = 0; i < message.length; i++) {
+                let xPos = spacing * (i + 1);
+                let letter = new Letter(message[i], xPos, yPos, i);
+                letterParticles.push(letter);
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (!showFinalMessage) {
+                letterParticles.forEach(letter => letter.update());
+            } else {
+                showFinalText();
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        function startAnimation() {
+            animationStarted = true;
+            letterParticles.forEach(letter => {
+                letter.dy = Math.random() * -2 - 1;
+            });
+
+            setTimeout(() => {
+                showFinalMessage = true;
+                animationStarted = false;
+            }, delayFinalMessage);
+        }
+
+        function showFinalText() {
+            ctx.font = "bold italic 60px Arial";
+            ctx.fillStyle = "#FFD700";
+            ctx.textAlign = "center";
+            ctx.fillText(finalMessage, canvas.width / 2, canvas.height / 2);
+        }
+
+        init();
+        animate();
+
+        setTimeout(startAnimation, 5000);
+    </script>
+</body>
+</html>
